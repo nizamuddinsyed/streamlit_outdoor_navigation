@@ -52,7 +52,9 @@ def load_hammerbrook():
 
 def load_digilab():
     lsbg_icon_image = 'scr/images/lsbg-logo.png'
-    digilab_loc = 'scr/files/digilab.geojson'
+    # digilab_loc = 'scr/files/digilab.geojson'
+    digilab_loc = 'scr/files/digilab_new.geojson'
+
 
     lsbg_icon = folium.CustomIcon(
         lsbg_icon_image,
@@ -60,7 +62,7 @@ def load_digilab():
     )
     folium.Marker(
         location=[
-            53.54467217628269,10.023347869684045],
+            53.54444707488713,10.023483391674802],
         tooltip="XLab / DigiLab",
         icon=lsbg_icon
     ).add_to(m)
@@ -69,8 +71,6 @@ def load_digilab():
         digilab_loc,
         tooltip="XLab / DigiLab",
     ).add_to(m)
-
-
 
 def load_hbf():
 
@@ -91,6 +91,22 @@ def load_hbf():
         tooltip="Hamburg Central Station",
     ).add_to(m)
 
+# load digilab to Haus-C  "Hauptgeschäftsstelle im 4.OG"
+# address: Sachsenfeld 3-5, 20097 Hamburg, Germany
+def load_hausc():
+    hausc_loc = 'scr/files/hausc.geojson'
+
+    folium.Marker(
+
+        location=[53.54531250359929,10.022214197499522],
+        tooltip="Hauptgeschäftsstelle 4.OG",
+        icon=folium.Icon(color="red", icon="building", prefix="fa"),
+    ).add_to(m)
+
+    folium.GeoJson(
+        hausc_loc,
+        tooltip="Hauptgeschäftsstelle im 4.OG",
+    ).add_to(m)
 
 
 def load_path_hammerbrook_to_digilab():
@@ -107,6 +123,12 @@ def load_path_hbf_to_digilab():
     antpath = AntPath(hbf_antpath_coords,delay=500, dash_array=[30, 30],pulse_color='green',color='orange',weight=10, tooltip=' << Way to DigiLab >>', opacity=1).add_to(m)
     return m
 
+# digilab to Haus C path
+def load_path_digilab_to_hausc():
+    hausc_path_json = open('scr/files/path_haus_c.json')
+    hausc_antpath_coords = json.load(hausc_path_json)
+    antpath = AntPath(hausc_antpath_coords,delay=500, dash_array=[30, 30],pulse_color='red',color='orange',weight=10, tooltip=' << Way to Hauptgeschäftsstelle >>', opacity=1).add_to(m)
+    return m
 
 # load folium map
 map_tiles =  ["Cartodb Positron","OpenStreetMap", "CartoDB dark_matter"]
@@ -120,8 +142,8 @@ m = folium.Map(location=[53.54425971489263, 10.023687726089832], zoom_start=14, 
                )
 
 
-source_locations = ['Hammerbrook', 'Hamburg Hbf']
-destination_location = ['DigiLab']
+source_locations = ['Hammerbrook', 'Hamburg Hbf','DigiLab']
+destination_location = ['DigiLab', 'Hauptgeschäftsstelle']
 
 # st.title("Lets go ...	:bicyclist: .. :walking: .. 	:man-running:")
 st.title("Lets go ...	:bicyclist: .. :walking: .. 	:man-running:")
@@ -142,6 +164,10 @@ if user_start_point == 'Hammerbrook':
     load_hammerbrook()
 elif user_start_point == 'Hamburg Hbf':
     load_hbf()
+elif user_start_point == 'DigiLab':
+    load_digilab()
+elif user_start_point == 'Hauptgeschäftsstelle':
+    load_hausc()
 else :
     pass
 
@@ -152,6 +178,8 @@ user_end_point = st.sidebar.selectbox(":round_pushpin: Choose destination ",
                                       disabled=False, label_visibility="visible")
 if user_end_point == 'DigiLab':
     load_digilab()
+elif user_end_point == "Hauptgeschäftsstelle":
+    load_hausc()
 else :
     pass
 
@@ -163,6 +191,8 @@ if submit_button:
         load_path_hammerbrook_to_digilab()
     elif user_start_point == 'Hamburg Hbf' and user_end_point == 'DigiLab':
         load_path_hbf_to_digilab()
+    elif user_start_point == "DigiLab" and user_end_point == 'Hauptgeschäftsstelle':
+        load_path_digilab_to_hausc()
     else:
         st.error("### Please select the correct start and end points")
 
